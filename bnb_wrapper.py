@@ -1,5 +1,6 @@
 import requests
 import json
+from datetime import datetime
 import pandas as pd
 from pandas import DataFrame as df
 import hmac
@@ -27,18 +28,103 @@ class BinanceClient:
             'recent_trade': '/api/v3/trades'             # recent trades on the market
         }
 
+    '''
+        return klines for a specified symbol
+    '''
     def get_klines(self, symbol: str, interval: Interval):
+
+        # specifying params for request body
         params = {
             'symbol': symbol,
             'interval': interval.value
         }
-
+        # specifying url enpoint
         url = self.base + self.endpoint['klines']
 
+        # get api response
         response = requests.get(url, params=params)
+        # convert json to dict
         data = json.loads(response.text)
         
-        return data
+        # delete later
+        # print(data)
+
+        # convert dict to data frame
+        klines_df = df(data)
+
+        # delete later
+        # print(klines_df)
+
+        # get open time and close time from klines_df
+        o_timestamp_df = klines_df[0]      # open timestamp
+        c_timestamp_df = klines_df[6]      # close timestamp
+
+        # delete later
+        # print(o_timestamp_df)
+        # print(c_timestamp_df)
+
+        # create empty arrays for formatted datetime
+        o_time = []      # open time
+        c_time = []      # close time
+        
+        # convert timestamps to datetime format
+        for (o_timestamp, c_timestamp) in zip(o_timestamp_df, c_timestamp_df):
+            o_time.append(datetime.fromtimestamp(int(o_timestamp/1000)))
+            c_time.append(datetime.fromtimestamp(int(c_timestamp/1000)))
+        
+        # delete later
+        # print(o_time)
+        # print(c_time)
+
+        # convert datetime to string datetime format for df
+        o_time_df = df(o_time)
+        c_time_df = df(c_time)
+
+        # delete later
+        # print(o_time_df)
+        # print(c_time_df)
+
+        # replacing the original timestamp with formatted datetime string
+        klines_df[0] = o_time_df
+        klines_df[6] = c_time_df
+
+        # delete later
+        # print(klines_df)
+
+        return klines_df
+
+    '''
+        return current price
+            1. for a symbol if symbol is specified
+            2. for all symbols
+    '''
+    def get_price(self, symbol = None):
+        
+        # specifying parameter for the request body
+        params = {
+            'symbol': symbol
+        }
+
+        # specifying url endpoint
+        url = self.base + self.endpoint['price_ticker']
+        
+        # get api response
+        response = requests.get(url, params=params)
+        # convert json to dict
+        data = json.loads(response.text)
+
+        # delete later
+        # print(data)
+
+        # convert dict to dataframe
+        price_df = df(data)
+
+        # delete later
+        # print(price_df)
+
+        return price_df
+        
+
 
     '''
         sign your request to Binance API
@@ -59,5 +145,6 @@ class BinanceClient:
 
 bnb = BinanceClient('', '')
 
-klines = bnb.get_klines('BNBBTC', Interval._5MINUTE)
-print(klines)
+# bnb.get_klines('BNBBTC', Interval._5MINUTE)
+
+# bnb.get_price()
