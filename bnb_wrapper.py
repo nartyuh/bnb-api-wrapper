@@ -6,6 +6,7 @@ from pandas import DataFrame as df
 import hmac
 import hashlib
 from interval_enums import Interval
+import time
 
 class BinanceClient:
 
@@ -20,9 +21,9 @@ class BinanceClient:
             'historical_trade': '/api/v3/historicalTrades',            # recent trades on the market
             'order': '/api/v3/order',
             'test_order': '/api/v3/order/test',
-            'open_order': '/api/v3/openOrders',          # all open orders
-            'all_order': '/api/v3/allOrders',            # all orders: active, cancelled, filler
-            'my_trade': '/api/v3/myTrades'               # all trades for a specific symbol on the account
+            'open_order': '/api/v3/openOrders',                        # all open orders
+            'all_order': '/api/v3/allOrders',                          # all orders: active, cancelled, filler
+            'my_trade': '/api/v3/myTrades'                             # all trades for a specific symbol on the account
         }
 
 
@@ -164,6 +165,110 @@ class BinanceClient:
 
         return trade_df
 
+
+    '''
+        get the status of an order
+        @param symbol: str, orderId: long
+    '''
+    def get_query_order(self, symbol, orderId):
+        
+        # specify parameters for request body
+        params = {
+            'symbol': symbol,
+            'orderId': orderId,
+            'timestamp': int(round(time.time()*1000))
+        }
+        # specify url endpoint
+        url = self.base + self.endpoint['order']
+
+        # delete later
+        # print(url)
+        
+        # sign request
+        self.sign_request(params)
+
+        # request api response
+        response = requests.get(url, params=params, headers={'X-MBX-APIKEY': self.key})
+        data = json.loads(response.text)
+
+        return data
+
+
+    '''
+        return list of open orders
+            1. of a symbol if symbol is specified
+            2. of all symbols if symbol is not specified
+        @param symbol: str
+    '''
+    def get_open_order(self, symbol=None):
+
+        # specify parameters for request body
+        if symbol != None:
+            params = {
+                'symbol': symbol,
+                'timestamp': int(round(time.time()*1000))
+            }
+        else:
+            params = {
+                'timestamp': int(round(time.time()*1000))
+
+            }
+        # specify url endpoint
+        url = self.base + self.endpoint['open_order']
+
+        # delete later
+        # print(url)
+
+        # sign request
+        self.sign_request(params)
+
+        # request api response
+        response = requests.get(url, params=params, headers={'X-MBX-APIKEY': self.key})
+        # convert json to dict
+        data = json.loads(response.text)
+        
+        return data
+
+
+    '''
+        return all orders of the specified symbol: active, canceled, filled
+            1. if orderId is specified, return orders with id >= orderId
+            2. else, return most recent orders for this symbol 
+        @param 
+            required - symbol: str
+            optional - orderId: long, limit: int , timeframe: [from, to]
+    '''
+    def get_all_order(self, symbol, orderId=None, timeframe=None, limit=None):
+
+        # specify parameters for request body
+        if orderId != None:
+            params = {
+                'symbol': symbol,
+                'orderId': orderId,
+                'timestamp': int(round(time.time()*1000))
+            }
+        else: 
+            params = {
+                'symbol': symbol,
+                'timestamp': int(round(time.time()*1000))
+            }
+        # specify url endpoint
+        url = self.base + self.endpoint['all_order']
+
+        # sign request
+        self.sign_request(params)
+
+        # request api response
+        response = requests.get(url, params=params, headers={'X-MBX-APIKEY': self.key})
+        # convert json to dict
+        data = json.loads(response.text)
+
+        # convert data to dataframe
+        all_order_df = df(data)
+
+        return all_order_df
+
+
     '''
         sign your request to Binance API
     '''
@@ -173,18 +278,16 @@ class BinanceClient:
         query_string = '&'.join(["{}={}".format(d,params[d]) for d in params])
         
         #hashing secret
-        print(self.secret)
         signature = hmac.new(self.secret.encode('utf-8'), 
                              query_string.encode('utf-8'),
                              hashlib.sha256)
         
         # add your signature to the request body
         params['signature'] = signature.hexdigest()
-        print(params)
 
 
-bnb = BinanceClient('', 
-                    '')
+bnb = BinanceClient('MYFPFEYF2zfmnLxZODGqGckY7zWlGHYkA2Zgkege8APEIjHKhrRXtcMW1hILDi3v', 
+                    'AIxfhSQ53qZA5zvJsOglp71IDm7Ccq3kPwv98d1eM7FzIkKUBfmjImkvQSolGcZq')
 
 print('--------------------------------------------------------------------------------------------')
 print(bnb.get_klines('BNBBTC', Interval._5MINUTE))
@@ -202,4 +305,13 @@ print(bnb.get_historical_trade('BNBBTC'))
 print(bnb.get_historical_trade('BNBBTC', limit=1000))
 print(bnb.get_historical_trade('BNBBTC', limit=1, tradeId=69010498))
 
+print('--------------------------------------------------------------------------------------------')
+print(bnb.get_query_order('LTCBTC', orderId=1))
+
+print('--------------------------------------------------------------------------------------------')
+print(bnb.get_open_order())
+print(bnb.get_open_order(symbol='BNBBTC'))
+
+print('--------------------------------------------------------------------------------------------')
+print(bnb.get_all_order('LINKUSDT'))
 
