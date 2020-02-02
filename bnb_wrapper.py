@@ -29,8 +29,10 @@ class BinanceClient:
 
     '''
         return klines for a specified symbol
+        @param
+            required - symbol: str, interval: Interval
     '''
-    def get_klines(self, symbol: str, interval: Interval):
+    def get_klines(self, symbol, interval):
 
         # specifying parameters for request body
         params = {
@@ -82,6 +84,8 @@ class BinanceClient:
         return current price
             1. for a symbol if symbol is specified
             2. for all symbols
+        @param
+            optional - symbol: str
     '''
     def get_price(self, symbol=None):
         
@@ -111,6 +115,8 @@ class BinanceClient:
         return 24 hour ticker
             1. for a symbol if symbol is specified
             2. for all symbols
+        @param
+            optional - symbol: str
     '''       
     def get_24hr_ticker(self, symbol=None):
 
@@ -118,7 +124,6 @@ class BinanceClient:
         params = {
             'symbol': symbol
         }
-
         # specifying url endpoint
         url = self.base + self.endpoint['24hr_ticker']
 
@@ -143,7 +148,9 @@ class BinanceClient:
             2. most recent trades if tradeId is not specified
                 a. most recent 500 trades if limit is not specified
                 b. the amount of trades specified by limit
-        @param symbol: str, limit: int, tradeId: long
+        @param
+            required - symbol: str
+            optional - limit: int, tradeId: long
     '''
     def get_historical_trade(self, symbol, limit=None, tradeId=None):
 
@@ -168,7 +175,8 @@ class BinanceClient:
 
     '''
         get the status of an order
-        @param symbol: str, orderId: long
+        @param 
+            required - symbol: str, orderId: long
     '''
     def get_query_order(self, symbol, orderId):
         
@@ -180,9 +188,6 @@ class BinanceClient:
         }
         # specify url endpoint
         url = self.base + self.endpoint['order']
-
-        # delete later
-        # print(url)
         
         # sign request
         self.sign_request(params)
@@ -198,7 +203,8 @@ class BinanceClient:
         return list of open orders
             1. of a symbol if symbol is specified
             2. of all symbols if symbol is not specified
-        @param symbol: str
+        @param 
+            optional - symbol: str
     '''
     def get_open_order(self, symbol=None):
 
@@ -215,9 +221,6 @@ class BinanceClient:
             }
         # specify url endpoint
         url = self.base + self.endpoint['open_order']
-
-        # delete later
-        # print(url)
 
         # sign request
         self.sign_request(params)
@@ -236,22 +239,37 @@ class BinanceClient:
             2. else, return most recent orders for this symbol 
         @param 
             required - symbol: str
-            optional - orderId: long, limit: int , timeframe: [from, to]
+            optional - orderId: long, limit: int
     '''
-    def get_all_order(self, symbol, orderId=None, timeframe=None, limit=None):
+    def get_all_order(self, symbol, orderId=None, limit=None):
 
         # specify parameters for request body
-        if orderId != None:
-            params = {
-                'symbol': symbol,
-                'orderId': orderId,
-                'timestamp': int(round(time.time()*1000))
-            }
-        else: 
-            params = {
-                'symbol': symbol,
-                'timestamp': int(round(time.time()*1000))
-            }
+        if limit == None:
+            if orderId != None:
+                params = {
+                    'symbol': symbol,
+                    'orderId': orderId,
+                    'timestamp': int(round(time.time()*1000))
+                }
+            else: 
+                params = {
+                    'symbol': symbol,
+                    'timestamp': int(round(time.time()*1000))
+                }
+        else:
+            if orderId != None:
+                params = {
+                    'symbol': symbol,
+                    'orderId': orderId,
+                    'limit': limit,
+                    'timestamp': int(round(time.time()*1000))
+                }
+            else: 
+                params = {
+                    'symbol': symbol,
+                    'limit': limit,
+                    'timestamp': int(round(time.time()*1000))
+                }
         # specify url endpoint
         url = self.base + self.endpoint['all_order']
 
@@ -284,34 +302,4 @@ class BinanceClient:
         
         # add your signature to the request body
         params['signature'] = signature.hexdigest()
-
-
-bnb = BinanceClient('MYFPFEYF2zfmnLxZODGqGckY7zWlGHYkA2Zgkege8APEIjHKhrRXtcMW1hILDi3v', 
-                    'AIxfhSQ53qZA5zvJsOglp71IDm7Ccq3kPwv98d1eM7FzIkKUBfmjImkvQSolGcZq')
-
-print('--------------------------------------------------------------------------------------------')
-print(bnb.get_klines('BNBBTC', Interval._5MINUTE))
-
-print('--------------------------------------------------------------------------------------------')
-print(bnb.get_price())
-print(bnb.get_price(symbol='BNBBTC'))
-
-print('--------------------------------------------------------------------------------------------')
-print(bnb.get_24hr_ticker())
-print(bnb.get_24hr_ticker(symbol='BNBBTC'))
-
-print('--------------------------------------------------------------------------------------------')
-print(bnb.get_historical_trade('BNBBTC'))
-print(bnb.get_historical_trade('BNBBTC', limit=1000))
-print(bnb.get_historical_trade('BNBBTC', limit=1, tradeId=69010498))
-
-print('--------------------------------------------------------------------------------------------')
-print(bnb.get_query_order('LTCBTC', orderId=1))
-
-print('--------------------------------------------------------------------------------------------')
-print(bnb.get_open_order())
-print(bnb.get_open_order(symbol='BNBBTC'))
-
-print('--------------------------------------------------------------------------------------------')
-print(bnb.get_all_order('LINKUSDT'))
 
