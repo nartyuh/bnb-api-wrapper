@@ -3,6 +3,9 @@ import enum
 
 class Order(enum.Enum):
     
+    BUY = 'BUY'
+    SELL = 'SELL'
+
     LIMIT = 'LIMIT'
     MARKET = 'MARKET'
     STOP_LOSS = 'STOP_LOSS'

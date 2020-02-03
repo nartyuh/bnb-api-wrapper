@@ -72,19 +72,19 @@ class BinanceClient:
             c_time.append(datetime.fromtimestamp(int(c_timestamp/1000)))
 
         # convert datetime to string datetime format for df
-        o_time_df = df(o_time)
-        c_time_df = df(c_time)
+        o_timestamp_df = df(o_time)
+        c_timestamp_df = df(c_time)
 
         # replacing the original timestamp with formatted datetime string
-        klines_df[0] = o_time_df
-        klines_df[6] = c_time_df
+        klines_df[0] = o_timestamp_df
+        klines_df[6] = c_timestamp_df
 
         # modifying dataframe
         klines_df.pop(11)
-        klines_df.columns = ['open time', 'open', 'high', 'low', 'close',
-                             'volume', 'close time', 'quote asset volume',
-                             'no. of trades', 'taker buy base asset volume',
-                             'taker buy quote asset volume']
+        klines_df.columns = ['openTime', 'open', 'high', 'low', 'close',
+                             'volume', 'closeTime', 'quoteAssetVol',
+                             'no. of trades', 'taker_buy_baseAssetVol',
+                             'taker_buy_quoteAssetVol']
         return klines_df
 
 
@@ -146,6 +146,27 @@ class BinanceClient:
         else:
             ticker_df = df([data])
 
+        # get openTime and closeTime from ticker_df
+        open_time_df = ticker_df['openTime']
+        close_time_df = ticker_df['closeTime']
+
+        # create new empty arrays for openTime and closeTime
+        open_time = []
+        close_time = []
+
+        # convert timestamps to datetime format
+        for (o, c) in zip(open_time_df, close_time_df):
+            open_time.append(datetime.fromtimestamp(int(o/1000)))
+            close_time.append(datetime.fromtimestamp(int(c/1000)))
+
+        # convert timestamps to string format
+        open_time_df = df(open_time)
+        close_time_df = df(close_time)
+
+        # replace timestamps in ticker_df with formatted timestamps
+        ticker_df['openTime'] = open_time_df
+        ticker_df['closeTime'] = close_time_df
+
         return ticker_df
 
 
@@ -177,6 +198,22 @@ class BinanceClient:
 
         # convert dict to dataframe
         trade_df = df(data)
+        if not trade_df.empty:
+            # get time from trade_df
+            time_df = trade_df['time']
+            
+            # make new empty array for time
+            _time = []
+
+            # convert timestamp to datetime format
+            for t in time_df:
+                _time.append(datetime.fromtimestamp(int(t/1000)))
+            
+            # convert timestamp to string format
+            time_df = df(_time)
+
+            # replace timestamp in trade_df with formatted timestamp
+            trade_df['time'] = time_df 
 
         return trade_df
 
@@ -235,7 +272,33 @@ class BinanceClient:
         # convert json to dict
         data = json.loads(response.text)
         
-        return data
+        # convert dict to dataframe
+        open_order_df = df(data)
+
+        # if dataframe is not empty
+        if not open_order_df.empty:
+            # get time and updateTime form open_order_df
+            time_df = open_order_df['time']                    # time
+            updateTime_df = open_order_df['updateTime']        # updateTime
+
+            # create new empty arrays for time and updateTime
+            _time = []
+            _updateTime = []
+
+            # convert time and updateTime to datetime format
+            for (t, u) in zip(time_df, updateTime_df):
+                _time.append(datetime.fromtimestamp(int(t/1000)))
+                _updateTime.append(datetime.fromtimestamp(int(u/1000)))
+
+            # convert time and updateTime to df
+            time_df = df(_time)
+            updateTime_df = df(_updateTime)
+
+            # replace original timestamps with formatted timestamps in open_order_df
+            open_order_df['time'] = time_df
+            open_order_df['updateTime'] = updateTime_df
+
+        return open_order_df
 
 
     '''
@@ -254,7 +317,7 @@ class BinanceClient:
             'timestamp': int(round(time.time()*1000))
 
         }
-        # specify optional parameter for request body
+        # specify optional parameters for request body
         if limit != None:
             if orderId != None:
                 params['orderId'] = orderId
@@ -278,6 +341,27 @@ class BinanceClient:
         # convert data to dataframe
         all_order_df = df(data)
 
+        # time and updateTime from all_order_df
+        time_df = all_order_df['time']                    # time
+        updateTime_df = all_order_df['updateTime']        # updateTime
+
+        # create new empty arrays for time and updateTime
+        _time = []
+        _updateTime = []
+
+        # convert time and updateTime to datetime format
+        for (t, u) in zip(time_df, updateTime_df):
+            _time.append(datetime.fromtimestamp(int(t/1000)))
+            _updateTime.append(datetime.fromtimestamp(int(u/1000)))
+
+        # convert time and updateTime to df
+        time_df = df(_time)
+        updateTime_df = df(_updateTime)
+
+        # replace original timestamps with formatted timestamps in all_order_df
+        all_order_df['time'] = time_df
+        all_order_df['updateTime'] = updateTime_df
+
         return all_order_df
 
     
@@ -289,32 +373,138 @@ class BinanceClient:
 
 
     '''
-       make a new buy order 
+        make a new order
+            1. set test=True if want to test order
+            2. set test=False if want to place order and the order is relected on the account
+        @private
+        @params 
+            required - symbol: str, side: enum, orderType: enum
     '''
-    def buy(self, symbol, side, orderType, timeInForce=None, quantity=None,
+    def __new_order(self, symbol, side, orderType, test=True, timeInForce=None, quantity=None,
             quoteOrderQty=None, price=None, stopPrice=None, icebergQty=None):
         
-        # specify the general parameters of request body
+        # specify the general parameters for request body
         params = {
             'symbol': symbol,
             'side': side.value,
-            'type': orderType
+            'type': orderType.value,
+            'newOrderRespType': 'RESULT',
+            'timestamp': int(round(time.time()*1000))
         }
-        return
+        # specify option parameters for request body
+        if orderType == Order.LIMIT:
+            params['timeInForce'] = timeInForce
+            params['quantity'] = quantity
+            params['price'] = price
+            if icebergQty != None:
+                params['icebergQty'] = icebergQty
+        elif orderType == Order.MARKET:
+            params['quantity'] = quantity
+        elif orderType == Order.STOP_LOSS:
+            params['quantity'] = quantity
+            params['stopPrice'] = stopPrice 
+        elif orderType == Order.STOP_LOSS_LIMIT:
+            params['timeInForce'] = timeInForce
+            params['quantity'] = quantity
+            params['price'] = price
+            params['stopPrice'] = stopPrice
+            if icebergQty != None:
+                params['icebergQty'] = icebergQty
+        elif orderType == Order.TAKE_PROFIT:
+            params['quantity'] = quantity
+            params['stopPrice'] = stopPrice
+        elif orderType == Order.TAKE_PROFIT_LIMIT:
+            params['timeInForce'] = timeInForce
+            params['quantity'] = quantity
+            params['price'] = price
+            params['stopPrice'] = stopPrice
+            if icebergQty != None:
+                params['icebergQty'] = icebergQty
+        elif orderType == Order.LIMIT_MAKER:
+            params['quantity'] = quantity
+            params['price'] = price
+        else:
+            raise Exception('Invalid order type.')
+        # specify url endpoint
+        if test == True:
+            url = self.base + self.endpoint['test_order']
+        else:
+            url = self.base + self.endpoint['order']
+
+        # sign request
+        self.sign_request(params)
+
+        # initialize new order, request api response
+        try:
+            response = requests.post(url, params=params, headers={'X-MBX-APIKEY': self.key})
+            data = json.loads(response.text)
+        except Exception as e:
+            print('Exception occured when trying to place buy order.')
+            data = json.loads(e.text)
+
+        return data
+
+    '''
+       make a new buy order 
+            1. set test=True if want to test buy order
+            2. set test=False if want to place buy order and the buy order is relected on the account
+       @params 
+            required - symbol: str, orderType: enum
+    '''
+    def buy(self, symbol, orderType, test=True, timeInForce=None, quantity=None,
+            quoteOrderQty=None, price=None, stopPrice=None, icebergQty=None):
+
+        return self.__new_order(symbol, Order.BUY, orderType, test=test, timeInForce=timeInForce, quantity=quantity,
+                                quoteOrderQty=quoteOrderQty, price=price, stopPrice=stopPrice, icebergQty=icebergQty)
     
 
     '''
         make a new sell order
+            1. set test=True if want to test sell order
+            2. set test=False if want to place sell order and the sell order is relected on the account
+        @params 
+            required - symbol: str, orderType: enum
     '''
-    def sell(self):
-        return
+    def sell(self, symbol, orderType, test=True, timeInForce=None, quantity=None,
+            quoteOrderQty=None, price=None, stopPrice=None, icebergQty=None):
+        
+        return self.__new_order(symbol, Order.SELL, orderType, test=test, timeInForce=timeInForce, quantity=quantity,
+                                quoteOrderQty=quoteOrderQty, price=price, stopPrice=stopPrice, icebergQty=icebergQty)
 
     
+        '''
+    ***********************************************************
+                        POST METHODS
+    ***********************************************************
+    '''
+
+
     '''
         cancel an open order
     '''
-    def cancel_order(self):
-        return
+    def cancel_order(self, symbol, orderId):
+
+        # specify parameters for request body
+        params = {
+            'symbol': symbol,
+            'orderId': orderId,
+            'timestamp': int(round(time.time()*1000))
+        }
+        # specify url endpoint
+        url = self.base + self.endpoint['order']
+
+        # sign request
+        self.sign_request(params)
+
+        # initialize cancel order, request api response
+        try:
+            response = requests.delete(url, params=params, headers={'X-MBX-APIKEY': self.key})
+            data = json.loads(response.text)
+        except Exception as e:
+            print('Failed to cancel order with ID' + orderId)
+            data = json.loads(e.text)
+        
+        return data
 
 
     '''
