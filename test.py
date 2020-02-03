@@ -1,5 +1,5 @@
-from bnb_wrapper import BinanceClient
-from interval_enums import Interval
+from binance import BinanceClient
+from interval_enum import Interval
 
 bnb = BinanceClient('MYFPFEYF2zfmnLxZODGqGckY7zWlGHYkA2Zgkege8APEIjHKhrRXtcMW1hILDi3v', 
                     'AIxfhSQ53qZA5zvJsOglp71IDm7Ccq3kPwv98d1eM7FzIkKUBfmjImkvQSolGcZq')

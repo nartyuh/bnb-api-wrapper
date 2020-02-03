@@ -1,12 +1,13 @@
 import requests
 import json
 from datetime import datetime
+import time
 import pandas as pd
 from pandas import DataFrame as df
 import hmac
 import hashlib
-from interval_enums import Interval
-import time
+from interval_enum import Interval
+from order_enum import Order
 
 class BinanceClient:
 
@@ -25,6 +26,13 @@ class BinanceClient:
             'all_order': '/api/v3/allOrders',                          # all orders: active, cancelled, filler
             'my_trade': '/api/v3/myTrades'                             # all trades for a specific symbol on the account
         }
+
+
+    '''
+    ***********************************************************
+                        GET METHODS
+    ***********************************************************
+    '''
 
 
     '''
@@ -208,17 +216,14 @@ class BinanceClient:
     '''
     def get_open_order(self, symbol=None):
 
-        # specify parameters for request body
-        if symbol != None:
-            params = {
-                'symbol': symbol,
-                'timestamp': int(round(time.time()*1000))
-            }
-        else:
-            params = {
-                'timestamp': int(round(time.time()*1000))
+        # specify general paramenters for request body
+        params = {
+            'timestamp': int(round(time.time()*1000))
 
-            }
+        }
+        # specify optional parameters for request body
+        if symbol != None:
+            params['symbol'] = symbol
         # specify url endpoint
         url = self.base + self.endpoint['open_order']
 
@@ -243,33 +248,22 @@ class BinanceClient:
     '''
     def get_all_order(self, symbol, orderId=None, limit=None):
 
-        # specify parameters for request body
-        if limit == None:
+        # specify the general parameters for request body
+        params = {
+            'symbol': symbol,
+            'timestamp': int(round(time.time()*1000))
+
+        }
+        # specify optional parameter for request body
+        if limit != None:
             if orderId != None:
-                params = {
-                    'symbol': symbol,
-                    'orderId': orderId,
-                    'timestamp': int(round(time.time()*1000))
-                }
-            else: 
-                params = {
-                    'symbol': symbol,
-                    'timestamp': int(round(time.time()*1000))
-                }
+                params['orderId'] = orderId
+                params['limit'] = limit
+            else:
+                params['limit'] = limit 
         else:
             if orderId != None:
-                params = {
-                    'symbol': symbol,
-                    'orderId': orderId,
-                    'limit': limit,
-                    'timestamp': int(round(time.time()*1000))
-                }
-            else: 
-                params = {
-                    'symbol': symbol,
-                    'limit': limit,
-                    'timestamp': int(round(time.time()*1000))
-                }
+                params['orderId'] = orderId
         # specify url endpoint
         url = self.base + self.endpoint['all_order']
 
@@ -285,6 +279,42 @@ class BinanceClient:
         all_order_df = df(data)
 
         return all_order_df
+
+    
+    '''
+    ***********************************************************
+                        POST METHODS
+    ***********************************************************
+    '''
+
+
+    '''
+       make a new buy order 
+    '''
+    def buy(self, symbol, side, orderType, timeInForce=None, quantity=None,
+            quoteOrderQty=None, price=None, stopPrice=None, icebergQty=None):
+        
+        # specify the general parameters of request body
+        params = {
+            'symbol': symbol,
+            'side': side.value,
+            'type': orderType
+        }
+        return
+    
+
+    '''
+        make a new sell order
+    '''
+    def sell(self):
+        return
+
+    
+    '''
+        cancel an open order
+    '''
+    def cancel_order(self):
+        return
 
 
     '''

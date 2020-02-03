@@ -1,5 +1,6 @@
 import enum
 
+
 class Interval(enum.Enum):
 
     _1MINUTE = '1m'
