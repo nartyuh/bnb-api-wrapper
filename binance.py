@@ -472,7 +472,7 @@ class BinanceClient:
                                 quoteOrderQty=quoteOrderQty, price=price, stopPrice=stopPrice, icebergQty=icebergQty)
 
     
-        '''
+    '''
     ***********************************************************
                         DELETE METHODS
     ***********************************************************
