@@ -20,10 +20,11 @@
      * get_open_order()
      * get_all_order()
 
-## Future updates
+## How to install
 
 To install:
 
 ```
 pip install binanceAPI-abr-ver
 ```
+## Future updates
