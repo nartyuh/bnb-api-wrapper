@@ -196,6 +196,10 @@ class BinanceClient:
         response = requests.get(url, params=params, headers={'X-MBX-APIKEY': self.key})
         data = json.loads(response.text)
 
+        # when exception occurs
+        if not isinstance(data, list):
+            return data
+
         # convert dict to dataframe
         trade_df = df(data)
 
@@ -273,6 +277,10 @@ class BinanceClient:
         # convert json to dict
         data = json.loads(response.text)
         
+        # when exception occurs
+        if not isinstance(data, list):
+            return data
+
         # convert dict to dataframe
         open_order_df = df(data)
 
@@ -338,6 +346,10 @@ class BinanceClient:
         response = requests.get(url, params=params, headers={'X-MBX-APIKEY': self.key})
         # convert json to dict
         data = json.loads(response.text)
+
+        # when exception occurs        
+        if not isinstance(data, list):
+            return data
 
         # convert data to dataframe
         all_order_df = df(data)
@@ -436,12 +448,8 @@ class BinanceClient:
         self.sign_request(params)
 
         # initialize new order, request api response
-        try:
-            response = requests.post(url, params=params, headers={'X-MBX-APIKEY': self.key})
-            data = json.loads(response.text)
-        except Exception as e:
-            print('Exception occured when trying to place buy order.')
-            data = json.loads(e.text)
+        response = requests.post(url, params=params, headers={'X-MBX-APIKEY': self.key})
+        data = json.loads(response.text)
 
         return data
 
@@ -500,12 +508,8 @@ class BinanceClient:
         self.sign_request(params)
 
         # initialize cancel order, request api response
-        try:
-            response = requests.delete(url, params=params, headers={'X-MBX-APIKEY': self.key})
-            data = json.loads(response.text)
-        except Exception as e:
-            print('Failed to cancel order with ID' + orderId)
-            data = json.loads(e.text)
+        response = requests.delete(url, params=params, headers={'X-MBX-APIKEY': self.key})
+        data = json.loads(response.text)
         
         return data
 
