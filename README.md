@@ -1,4 +1,4 @@
-﻿# bnb-api-wrapper
+﻿# Binance API Wrapper Abridged Version
  
 ## Binance API documentation
   To read more about Binance API, go to: https://binance-docs.github.io/apidocs/
