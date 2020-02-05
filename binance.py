@@ -481,6 +481,8 @@ class BinanceClient:
 
     '''
         cancel an open order
+        @param
+            @require symbol: str, orderId: long
     '''
     def cancel_order(self, symbol, orderId):
 
