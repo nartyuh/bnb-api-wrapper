@@ -198,6 +198,7 @@ class BinanceClient:
 
         # convert dict to dataframe
         trade_df = df(data)
+
         if not trade_df.empty:
             # get time from trade_df
             time_df = trade_df['time']
