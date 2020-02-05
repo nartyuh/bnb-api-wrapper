@@ -1,13 +1,15 @@
-﻿# bnb-api-wrapper
+﻿# Binance API Wrapper Abridged Version
  
 ## Binance API documentation
   To read more about Binance API, go to: https://binance-docs.github.io/apidocs/
   
 ## Note
 
+**Official release: https://pypi.org/project/binanceAPI-abr-ver/**
+
 ***This is an unofficial Binance API wrapper written in Python. This is in no way affliated with Binance in under any circumstances. Please use at your own risk.***
 
-**Definitely read the documentation on Binance API at [here](https://binance-docs.github.io/apidocs/) for further details and uses of this API wrapper.
+**Definitely read the documentation on Binance API at [here](https://binance-docs.github.io/apidocs/) for further details and uses of this API wrapper.**
 
 ## Features
 
@@ -20,6 +22,11 @@
      * get_open_order()
      * get_all_order()
 
-## Future updates
+## How to install
 
-I will work to make this as a pip package
+To install:
+
+```
+pip install binanceAPI-abr-ver
+```
+## Future updates
