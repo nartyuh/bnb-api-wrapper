@@ -22,4 +22,8 @@
 
 ## Future updates
 
-I will work to make this as a pip package
+To install:
+
+```
+pip install binanceAPI-abr-ver
+```
