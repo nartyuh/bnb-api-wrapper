@@ -45,12 +45,12 @@ client = BinanceClient('your-api-key', 'your-api-secret')
 ```
 
 ```
-'''
-return klines for a specified symbol
-@param
-     @required symbol: str, interval: Interval
-'''
-get_klines()
+    '''
+        return klines for a specified symbol
+        @param
+            required - symbol: str, interval: Interval
+    '''
+    get_klines()
 ```
 
 ```
