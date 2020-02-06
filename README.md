@@ -47,8 +47,8 @@ client = BinanceClient('your-api-key', 'your-api-secret')
 For example use cases, please look into [test.py](https://github.com/mrhuytran/bnb-api-wrapper/blob/master/test.py). 
 
 *Note that the import statements are different in test.py.*
-*In test.py, we are using absolute path to import for the sake of local development*
-*However, please use the import statement specified by [How to install](https://github.com/mrhuytran/bnb-api-wrapper/blob/master/README.md#L33)* 
+*In test.py, we are using absolute path to import for the sake of local development.*
+*However, please use the import statements specified by [How to install](https://github.com/mrhuytran/bnb-api-wrapper/blob/master/README.md#L33) if you want your code to compile.* 
 
 ## Future updates
 
