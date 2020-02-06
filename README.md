@@ -44,53 +44,11 @@ from binance.order_num import Order
 client = BinanceClient('your-api-key', 'your-api-secret')
 ```
 
-```
-    '''
-        return klines for a specified symbol
-        @param
-            required - symbol: str, interval: Interval
-    '''
-    get_klines()
-```
-
-```
-    '''
-        return current price
-            1. for a symbol if symbol is specified
-            2. for all symbols
-        @param
-            optional - symbol: str
-    '''
-    get_price()
-```
-
-```
-    '''
-        return 24 hour ticker
-            1. for a symbol if symbol is specified
-            2. for all symbols
-        @param
-            optional - symbol: str
-    '''
-    get_24hr_ticker()
-```
-
-```
-   '''
-        return list of historical trades
-            1. start from a specific trade if tradeId is specified upto
-               the specified amount of trade records
-            2. most recent trades if tradeId is not specified
-                a. most recent 500 trades if limit is not specified
-                b. the amount of trades specified by limit
-        @param
-            required - symbol: str
-            optional - limit: int, tradeId: long
-    '''
-    get_historical_trade()
-```
-
-
+For example use cases, please look into [test.py](https://github.com/mrhuytran/bnb-api-wrapper/blob/master/test.py). 
+*Note that the import statements are different in test.py. 
+ In test.py, we are using absolute path to import for the sake of local development.
+ However, please use the import statement specified by [How to install](https://github.com/mrhuytran/bnb-api-    wrapper/edit/master/README.md#L33)
+* 
 
 ## Future updates
 
