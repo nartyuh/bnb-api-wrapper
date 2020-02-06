@@ -53,6 +53,17 @@ return klines for a specified symbol
 get_klines()
 ```
 
+```
+    '''
+        return current price
+            1. for a symbol if symbol is specified
+            2. for all symbols
+        @param
+            optional - symbol: str
+    '''
+    get_price()
+```
+
 ## Future updates
 
 TBA
