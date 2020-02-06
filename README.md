@@ -24,9 +24,18 @@
 
 ## How to install
 
-To install:
+**To install:**
 
 ```
 pip install binanceAPI-abr-ver
 ```
+
+**to import the package:**
+
+```
+from binance.binance import BinanceClient
+from binance.interval_num import Interval
+from binance.order_num import Order
+```
+
 ## Future updates
