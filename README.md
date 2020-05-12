@@ -1,4 +1,4 @@
-﻿# Binance API Client Abridged Version
+﻿# Binance API Client
  
 ## Binance API documentation
   To read more about Binance API, go to: https://binance-docs.github.io/apidocs/
