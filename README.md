@@ -9,13 +9,13 @@
 
 ## Features
 
-* Supported functions:
-     * get_klines()
-     * get_price()
-     * get_24_hr_ticker()
-     * get_historical_trade()
-     * get_open_order()
-     * get_all_order()
+Supported functions:
+* get_klines()
+* get_price()
+* get_24_hr_ticker()
+* get_historical_trade()
+* get_open_order()
+* get_all_order()
 
 ## How to install
 
