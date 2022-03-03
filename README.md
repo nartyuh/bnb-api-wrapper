@@ -5,11 +5,7 @@
   
 ## Note
 
-**Official release: https://pypi.org/project/binanceAPI-abr-ver/**
-
 ***This is an unofficial Binance API wrapper written in Python. This is in no way affliated with Binance in under any circumstances. Please use at your own risk.***
-
-**Definitely read the documentation on Binance API at [here](https://binance-docs.github.io/apidocs/) for further details and uses of this API wrapper.**
 
 ## Features
 
