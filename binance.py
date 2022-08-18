@@ -40,7 +40,7 @@ class BinanceClient:
         @param
             required - symbol: str, interval: Interval
     '''
-    def get_klines(self, symbol, interval):
+    def getKlines(self, symbol, interval):
 
         # specifying parameters for request body
         params = {
@@ -95,7 +95,7 @@ class BinanceClient:
         @param
             optional - symbol: str
     '''
-    def get_price(self, symbol=None):
+    def getPrice(self, symbol=None):
         
         # specifying parameters for request body
         params = {
@@ -126,7 +126,7 @@ class BinanceClient:
         @param
             optional - symbol: str
     '''       
-    def get_24hr_ticker(self, symbol=None):
+    def get24hrTicker(self, symbol=None):
 
         # specify parameters for request body
         params = {
@@ -181,7 +181,7 @@ class BinanceClient:
             required - symbol: str
             optional - limit: int, tradeId: long
     '''
-    def get_historical_trade(self, symbol, limit=None, tradeId=None):
+    def getHistoricalTrade(self, symbol, limit=None, tradeId=None):
 
         # specifying parameter for request body
         params = {
@@ -228,7 +228,7 @@ class BinanceClient:
         @param 
             required - symbol: str, orderId: long
     '''
-    def get_query_order(self, symbol, orderId):
+    def getOrderStatus(self, symbol, orderId):
         
         # specify parameters for request body
         params = {
@@ -240,7 +240,7 @@ class BinanceClient:
         url = self.base + self.endpoint['order']
         
         # sign request
-        self.sign_request(params)
+        self.signRequest(params)
 
         # request api response
         response = requests.get(url, params=params, headers={'X-MBX-APIKEY': self.key})
@@ -256,7 +256,7 @@ class BinanceClient:
         @param 
             optional - symbol: str
     '''
-    def get_open_order(self, symbol=None):
+    def getOpenOrders(self, symbol=None):
 
         # specify general paramenters for request body
         params = {
@@ -270,7 +270,7 @@ class BinanceClient:
         url = self.base + self.endpoint['open_order']
 
         # sign request
-        self.sign_request(params)
+        self.signRequest(params)
 
         # request api response
         response = requests.get(url, params=params, headers={'X-MBX-APIKEY': self.key})
@@ -318,7 +318,7 @@ class BinanceClient:
             required - symbol: str
             optional - orderId: long, limit: int
     '''
-    def get_all_order(self, symbol, orderId=None, limit=None):
+    def getAllOrdersBySymbol(self, symbol, orderId=None, limit=None):
 
         # specify the general parameters for request body
         params = {
@@ -340,7 +340,7 @@ class BinanceClient:
         url = self.base + self.endpoint['all_order']
 
         # sign request
-        self.sign_request(params)
+        self.signRequest(params)
 
         # request api response
         response = requests.get(url, params=params, headers={'X-MBX-APIKEY': self.key})
@@ -393,7 +393,7 @@ class BinanceClient:
         @params 
             required - symbol: str, side: enum, orderType: enum
     '''
-    def __new_order(self, symbol, side, orderType, test=True, timeInForce=None, quantity=None,
+    def __newOrder(self, symbol, side, orderType, test=True, timeInForce=None, quantity=None,
             quoteOrderQty=None, price=None, stopPrice=None, icebergQty=None):
         
         # specify the general parameters for request body
@@ -445,7 +445,7 @@ class BinanceClient:
             url = self.base + self.endpoint['order']
 
         # sign request
-        self.sign_request(params)
+        self.signRequest(params)
 
         # initialize new order, request api response
         response = requests.post(url, params=params, headers={'X-MBX-APIKEY': self.key})
@@ -454,16 +454,16 @@ class BinanceClient:
         return data
 
     '''
-       make a new buy order 
+        make a new buy order 
             1. set test=True if want to test buy order
             2. set test=False if want to place buy order and the buy order is relected on the account
-       @params 
+        @params 
             required - symbol: str, orderType: enum
     '''
     def buy(self, symbol, orderType, test=True, timeInForce=None, quantity=None,
             quoteOrderQty=None, price=None, stopPrice=None, icebergQty=None):
 
-        return self.__new_order(symbol, Order.BUY, orderType, test=test, timeInForce=timeInForce, quantity=quantity,
+        return self.__newOrder(symbol, Order.BUY, orderType, test=test, timeInForce=timeInForce, quantity=quantity,
                                 quoteOrderQty=quoteOrderQty, price=price, stopPrice=stopPrice, icebergQty=icebergQty)
     
 
@@ -477,7 +477,7 @@ class BinanceClient:
     def sell(self, symbol, orderType, test=True, timeInForce=None, quantity=None,
             quoteOrderQty=None, price=None, stopPrice=None, icebergQty=None):
         
-        return self.__new_order(symbol, Order.SELL, orderType, test=test, timeInForce=timeInForce, quantity=quantity,
+        return self.__newOrder(symbol, Order.SELL, orderType, test=test, timeInForce=timeInForce, quantity=quantity,
                                 quoteOrderQty=quoteOrderQty, price=price, stopPrice=stopPrice, icebergQty=icebergQty)
 
     
@@ -491,9 +491,9 @@ class BinanceClient:
     '''
         cancel an open order
         @param
-            @require symbol: str, orderId: long
+            require symbol: str, orderId: long
     '''
-    def cancel_order(self, symbol, orderId):
+    def cancelOrder(self, symbol, orderId):
 
         # specify parameters for request body
         params = {
@@ -505,7 +505,7 @@ class BinanceClient:
         url = self.base + self.endpoint['order']
 
         # sign request
-        self.sign_request(params)
+        self.signRequest(params)
 
         # initialize cancel order, request api response
         response = requests.delete(url, params=params, headers={'X-MBX-APIKEY': self.key})
@@ -515,9 +515,16 @@ class BinanceClient:
 
 
     '''
+    ***********************************************************
+                        DELETE METHODS
+    ***********************************************************
+    '''
+
+
+    '''
         sign your request to Binance API
     '''
-    def sign_request(self, params: dict):
+    def signRequest(self, params: dict):
         
         #make a query string
         query_string = '&'.join(["{}={}".format(d,params[d]) for d in params])
